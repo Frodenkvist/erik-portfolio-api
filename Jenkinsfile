@@ -10,12 +10,13 @@ pipeline {
 
     stages {
         stage('Replace tokens') {
+            environment {
+                DB_CONNECTION_STRING=credentials('erikportfolio-db-connection-string')
+                JWT_SECRET=credentials('erikportfolio-jwt-secret')
+            }
             steps {
                 script {
                     sh '''
-                    DB_CONNECTION_STRING=credentials('erikportfolio-db-connection-string')
-                    JWT_SECRET=credentials('erikportfolio-jwt-secret')
-
                     echo "$JWT_SECRET"
 
                     sed -i "s/\${dbConnectionString}/$DB_CONNECTION_STRING/g" ErikPortfolioApi/appsettings.json
