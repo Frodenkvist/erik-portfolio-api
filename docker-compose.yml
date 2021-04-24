@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=erikportfolio
+    volumes:
+      - "/opt/erikportfolio/postgres:/var/lib/postgresql/data"
+  api:
+    image: erik-portfolio-api
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "44336:44336"
+    volumes:
+      - "/opt/erikportfolio/data:/app/data"
