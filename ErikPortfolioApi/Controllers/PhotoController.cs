@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ErikPortfolioApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class PhotoController : ControllerBase
     {
         private readonly ILogger<PhotoController> _logger;

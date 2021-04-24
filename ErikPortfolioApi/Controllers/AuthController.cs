@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ErikPortfolioApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
