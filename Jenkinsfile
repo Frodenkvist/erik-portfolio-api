@@ -17,10 +17,11 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    echo "$JWT_SECRET"
+                    REPLACE_DB='${dbConnectionString}'
+                    REPLACE_JWT='${jwtSecret}'
 
-                    sed -i "s/\${dbConnectionString}/$DB_CONNECTION_STRING/g" ErikPortfolioApi/appsettings.json
-                    sed -i "s/\${jwtSecret}/$JWT_SECRET/g" ErikPortfolioApi/appsettings.json
+                    sed -i "s/$REPLACE_DB/$DB_CONNECTION_STRING/g" ErikPortfolioApi/appsettings.json
+                    sed -i "s/$REPLACE_JWT/$JWT_SECRET/g" ErikPortfolioApi/appsettings.json
                     '''
                 }
             }
