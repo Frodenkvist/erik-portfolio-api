@@ -8,7 +8,7 @@ RUN dotnet restore
 
 COPY ErikPortfolioApi/. ./ErikPortfolioApi/
 WORKDIR /source/ErikPortfolioApi
-RUN dotnet public -c release -o /app --no-restore
+RUN dotnet publish -c release -o /app --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
 WORKDIR /app
