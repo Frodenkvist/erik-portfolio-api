@@ -1,0 +1,31 @@
+﻿using ErikPortfolioApi.Model;
+using System;
+using System.Drawing;
+using System.IO;
+
+namespace ErikPortfolioApi.Transform
+{
+    public static class TransformExtensions
+    {
+        public static EncodedPhoto ToEncodedPhoto(this Photo photo)
+        {
+            var encodedPhoto = new EncodedPhoto()
+            {
+                Id = photo.Id
+            };
+
+            using (Image image = Image.FromFile(photo.Path))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    image.Save(m, image.RawFormat);
+                    var imageBytes = m.ToArray();
+
+                    encodedPhoto.Data = $"data:image/{photo.Path.Split(".")[1]};base64,{Convert.ToBase64String(imageBytes)}";
+                }
+            }
+
+            return encodedPhoto;
+        }
+    }
+}

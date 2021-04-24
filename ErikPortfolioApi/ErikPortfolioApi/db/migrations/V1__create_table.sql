@@ -1,0 +1,4 @@
+﻿CREATE TABLE photo (
+	id SERIAL NOT NULL PRIMARY KEY,
+	path TEXT NOT NULL
+);
