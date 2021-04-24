@@ -9,15 +9,11 @@ pipeline {
     }
 
     stages {
-        stage('Clean workspace') {
-            steps [
-                cleanWs()
-            ]
-        }
-
-        stage('Git Checkout') {
+        stage('Build') {
             steps {
-                git branch: 'master', credentialsId: '', url: 'git@github.com:Frodenkvist/erik-portfolio-api.git'
+                script {
+                    docker.build("erik-portfolio-api")
+                }
             }
         }
     }
