@@ -1,8 +1,8 @@
 ﻿using ErikPortfolioApi.Model;
 using ErikPortfolioApi.Repositories;
 using ErikPortfolioApi.Transform;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,11 +14,13 @@ namespace ErikPortfolioApi.Services
     {
         private readonly PhotoRepository _photoRepository;
         private readonly IConfiguration _configuration;
+        private readonly FolderService _folderService;
 
-        public PhotoService(PhotoRepository photoRepository, IConfiguration configuration)
+        public PhotoService(PhotoRepository photoRepository, IConfiguration configuration, FolderService folderService)
         {
             _photoRepository = photoRepository;
             _configuration = configuration;
+            _folderService = folderService;
         }
 
         public async Task<IEnumerable<EncodedPhoto>> GetEncodedPhotos()
@@ -28,31 +30,31 @@ namespace ErikPortfolioApi.Services
             return photos.Select(p => p.ToEncodedPhoto());
         }
 
-        public async Task<IEnumerable<Photo>> SavePhotos(List<IFormFile> files)
+        public async Task<Photo> SavePhotos(CreatePhotoRequest createPhotoRequest)
         {
-            List<Photo> photos = new List<Photo>();
             var basePath = _configuration.GetSection("Photo").GetValue<string>("storagePath");
 
-            foreach (var formFile in files)
+            if (createPhotoRequest.File.Length == 0) throw new ArgumentException("File null");
+
+            var folder = await _folderService.GetFolder(createPhotoRequest.ParentFolderId);
+
+            var filePath = Path.Combine(basePath, createPhotoRequest.File.FileName);
+
+            using (var stream = File.Create(filePath))
             {
-                if (formFile.Length == 0) continue;
-
-                var filePath = Path.Combine(basePath, formFile.FileName);
-
-                using (var stream = File.Create(filePath))
-                {
-                    await formFile.CopyToAsync(stream);
-                }
-
-                photos.Add(await _photoRepository.WritePhoto(new Photo() { Path = filePath }));
+                await createPhotoRequest.File.CopyToAsync(stream);
             }
 
-            return photos;
+            return await _photoRepository.WritePhoto(new Photo() { PhysicalPath = filePath, ParentFolder = folder });
         }
 
         public async Task DeletePhoto(long id)
         {
+            Photo photo = await _photoRepository.ReadPhoto(id);
+
             await _photoRepository.DeletePhoto(id);
+
+            File.Delete(photo.PhysicalPath);
         }
     }
 }

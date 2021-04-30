@@ -36,11 +36,23 @@ namespace ErikPortfolioApi.Repositories
             return photos;
         }
 
+        public async Task<Photo> ReadPhoto(long id)
+        {
+            Photo photo;
+
+            using (IDbConnection conn = Connection)
+            {
+                photo = (await conn.QueryAsync<Photo>("SELECT * FROM photo WHERE id = @id", new { id })).First();
+            }
+
+            return photo;
+        }
+
         public async Task<Photo> WritePhoto(Photo photo)
         {
             using (IDbConnection conn = Connection)
             {
-                var result = await conn.QueryAsync<int>("INSERT INTO photo (path) VALUES (@path) RETURNING Id", new { path = photo.Path });
+                var result = await conn.QueryAsync<int>("INSERT INTO photo (path) VALUES (@path) RETURNING Id", new { path = photo.PhysicalPath });
                 photo.Id = result.Single();
             }
 

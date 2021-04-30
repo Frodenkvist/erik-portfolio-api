@@ -1,10 +1,9 @@
-﻿using ErikPortfolioApi.Services;
+﻿using ErikPortfolioApi.Model;
+using ErikPortfolioApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ErikPortfolioApi.Controllers
@@ -30,9 +29,9 @@ namespace ErikPortfolioApi.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> UploadPhotos(List<IFormFile> files)
+        public async Task<IActionResult> UploadPhotos([FromBody] CreatePhotoRequest createPhotoRequest)
         {
-            return Ok(await _photoService.SavePhotos(files));
+            return Ok(await _photoService.SavePhotos(createPhotoRequest));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

@@ -36,6 +36,11 @@ namespace ErikPortfolioApi
             );
             services.AddSingleton<AuthService>();
 
+            services.AddSingleton(provider =>
+                new FolderRepository(Configuration.GetConnectionString("db"))
+            );
+            services.AddSingleton<FolderService>();
+
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
             services.AddAuthentication(options =>
