@@ -27,6 +27,13 @@ namespace ErikPortfolioApi.Controllers
         {
             return Ok(await _folderService.GetTopFolders());
         }
+    
+        [HttpGet]
+        [Route("structure")]
+        public async Task<IActionResult> GetFolderStructure()
+        {
+            return Ok(await _folderService.GetFolderStructure());
+        }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]

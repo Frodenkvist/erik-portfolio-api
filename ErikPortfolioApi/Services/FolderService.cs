@@ -1,6 +1,7 @@
 ﻿using ErikPortfolioApi.Model;
 using ErikPortfolioApi.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ErikPortfolioApi.Services
@@ -27,6 +28,33 @@ namespace ErikPortfolioApi.Services
         public async Task<Folder> CreateFolder(Folder folder)
         {
             return await _folderRepository.WriteFolder(folder);
+        }
+
+        public async Task<IEnumerable<FolderDto>> GetFolderStructure()
+        {
+            var folderDtos = (await _folderRepository.ReadTopFolders()).Select(f => new FolderDto { Id = f.Id, Name = f.Name, Children = new List<FolderDto>() });
+            var folders = (await _folderRepository.ReadFolders()).Where(f => folderDtos.All(fd => fd.Id != f.Id));
+
+            var structureDtos = new List<FolderDto>();
+
+            foreach(var folderDto in folderDtos)
+            {
+                structureDtos.Add(await ConvertChildFolders(folderDto, folders));
+            }
+
+            return structureDtos;
+        }
+
+        private async Task<FolderDto> ConvertChildFolders(FolderDto folderDto, IEnumerable<Folder> folders)
+        {
+            var children = folders.Where(f => f.ParentFolderId == folderDto.Id).Select(f => new FolderDto { Id = f.Id, Name = f.Name, Children = new List<FolderDto>() }).ToList();
+
+            foreach (var child in children)
+            {
+                folderDto.Children = folderDto.Children.Concat(new[] { await ConvertChildFolders(child, folders) });
+            }
+
+            return folderDto;
         }
     }
 }

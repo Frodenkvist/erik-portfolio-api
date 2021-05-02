@@ -30,10 +30,22 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                topFolders = await conn.QueryAsync<Folder>("SELECT * FROM folder WHERE parent_folder_id IS NULL");
+                topFolders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE parent_folder_id IS NULL");
             }
 
             return topFolders;
+        }
+
+        public async Task<IEnumerable<Folder>> ReadFoldersFromParentId(long parentFolderId)
+        {
+            IEnumerable<Folder> folders;
+
+            using (IDbConnection conn = Connection)
+            {
+                folders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE parent_folder_id = @parentFolderId", new { parentFolderId });
+            }
+
+            return folders;
         }
 
         public async Task<Folder> ReadFolder(long id)
@@ -42,10 +54,22 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                folder = await conn.QueryFirstAsync<Folder>("SELECT * FROM folder WHERE id = @id", new { id });
+                folder = await conn.QueryFirstAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE id = @id", new { id });
             }
 
             return folder;
+        }
+
+        public async Task<IEnumerable<Folder>> ReadFolders()
+        {
+            IEnumerable<Folder> folders;
+
+            using(IDbConnection conn = Connection)
+            {
+                folders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder");
+            }
+
+            return folders;
         }
 
         public async Task<Folder> WriteFolder(Folder folder)
@@ -53,7 +77,7 @@ namespace ErikPortfolioApi.Repositories
             using (IDbConnection conn = Connection)
             {
                 folder.Id = await conn.QueryFirstAsync<int>("INSERT INTO folder (name, parent_folder_id) VALUES (@name, @parentFolderId) RETURNING Id",
-                    new { name = folder.Name, parentFolderId = folder.ParentFolder?.Id });
+                    new { name = folder.Name, parentFolderId = folder.ParentFolderId });
             }
 
             return folder;
