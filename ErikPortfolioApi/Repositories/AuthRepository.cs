@@ -37,7 +37,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (var conn = Connection)
             {
-                hashedPassword = (await conn.QueryAsync<string>("SELECT password FROM login WHERE username = @username", new { username })).First();
+                hashedPassword = await conn.QueryFirstAsync<string>("SELECT password FROM login WHERE username = @username", new { username });
             }
 
             return hashedPassword ?? throw new ArgumentException($"username {username} did not have a valid password");

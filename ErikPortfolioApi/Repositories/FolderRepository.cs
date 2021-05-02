@@ -42,7 +42,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                folder = (await conn.QueryAsync<Folder>("SELECT * FROM folder WHERE id = @id", new { id })).First();
+                folder = await conn.QueryFirstAsync<Folder>("SELECT * FROM folder WHERE id = @id", new { id });
             }
 
             return folder;
@@ -52,10 +52,8 @@ namespace ErikPortfolioApi.Repositories
         {
             using (IDbConnection conn = Connection)
             {
-                var result = await conn.QueryAsync<int>("INSERT INTO folder (name, parent_folder_id) VALUES (@name, @parentFolderId) RETURNING Id",
+                folder.Id = await conn.QueryFirstAsync<int>("INSERT INTO folder (name, parent_folder_id) VALUES (@name, @parentFolderId) RETURNING Id",
                     new { name = folder.Name, parentFolderId = folder.ParentFolder?.Id });
-
-                folder.Id = result.Single();
             }
 
             return folder;

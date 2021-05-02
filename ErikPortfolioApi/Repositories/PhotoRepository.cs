@@ -24,13 +24,13 @@ namespace ErikPortfolioApi.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<IEnumerable<Photo>> ReadPhotos()
+        public async Task<IEnumerable<Photo>> ReadPhotos(long folderId)
         {
             IEnumerable<Photo> photos;
 
             using (IDbConnection conn = Connection)
             {
-                photos = await conn.QueryAsync<Photo>("SELECT * FROM photo");
+                photos = await conn.QueryAsync<Photo>("SELECT id, name, physical_path physicalPath FROM photo WHERE parent_folder_id = @parentFolderId", new { parentFolderId = folderId });
             }
 
             return photos;
@@ -42,7 +42,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                photo = (await conn.QueryAsync<Photo>("SELECT * FROM photo WHERE id = @id", new { id })).First();
+                photo = await conn.QueryFirstAsync<Photo>("SELECT id, name, physical_path physicalPath FROM photo WHERE id = @id", new { id });
             }
 
             return photo;
@@ -52,8 +52,13 @@ namespace ErikPortfolioApi.Repositories
         {
             using (IDbConnection conn = Connection)
             {
-                var result = await conn.QueryAsync<int>("INSERT INTO photo (path) VALUES (@path) RETURNING Id", new { path = photo.PhysicalPath });
-                photo.Id = result.Single();
+                photo.Id = await conn.QueryFirstAsync<int>("INSERT INTO photo (physical_path, parent_folder_id, name) VALUES (@physical_path, @parent_folder_id, @name) RETURNING Id",
+                    new
+                    {
+                        physical_path = photo.PhysicalPath,
+                        parent_folder_id = photo.ParentFolder.Id,
+                        name = photo.name
+                    });
             }
 
             return photo;

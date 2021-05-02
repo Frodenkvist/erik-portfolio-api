@@ -23,9 +23,9 @@ namespace ErikPortfolioApi.Services
             _folderService = folderService;
         }
 
-        public async Task<IEnumerable<EncodedPhoto>> GetEncodedPhotos()
+        public async Task<IEnumerable<EncodedPhoto>> GetEncodedPhotos(long folderId)
         {
-            var photos = await _photoRepository.ReadPhotos();
+            var photos = await _photoRepository.ReadPhotos(folderId);
 
             return photos.Select(p => p.ToEncodedPhoto());
         }
@@ -45,7 +45,7 @@ namespace ErikPortfolioApi.Services
                 await createPhotoRequest.File.CopyToAsync(stream);
             }
 
-            return await _photoRepository.WritePhoto(new Photo() { PhysicalPath = filePath, ParentFolder = folder });
+            return await _photoRepository.WritePhoto(new Photo() { PhysicalPath = filePath, ParentFolder = folder, name = createPhotoRequest.File.FileName });
         }
 
         public async Task DeletePhoto(long id)

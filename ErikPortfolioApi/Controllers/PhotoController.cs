@@ -22,14 +22,15 @@ namespace ErikPortfolioApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPhotos()
+        [Route("{folderId}")]
+        public async Task<IActionResult> GetPhotos([FromRoute] long folderId)
         {
-            return Ok(await _photoService.GetEncodedPhotos());
+            return Ok(await _photoService.GetEncodedPhotos(folderId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> UploadPhotos([FromBody] CreatePhotoRequest createPhotoRequest)
+        public async Task<IActionResult> UploadPhotos([FromForm] CreatePhotoRequest createPhotoRequest)
         {
             return Ok(await _photoService.SavePhotos(createPhotoRequest));
         }
