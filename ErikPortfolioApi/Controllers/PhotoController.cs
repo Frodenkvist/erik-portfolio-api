@@ -22,10 +22,17 @@ namespace ErikPortfolioApi.Controllers
         }
 
         [HttpGet]
-        [Route("{folderId}")]
-        public async Task<IActionResult> GetPhotos([FromRoute] long folderId)
+        [Route("encoded/{folderId}")]
+        public async Task<IActionResult> GetEncodedPhotos([FromRoute] long folderId)
         {
             return Ok(await _photoService.GetEncodedPhotos(folderId));
+        }
+
+        [HttpGet]
+        [Route("present/{folderId}")]
+        public async Task<IActionResult> GetPresentPhotos([FromRoute] long folderId)
+        {
+            return Ok(await _photoService.GetPresentPhotos(folderId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

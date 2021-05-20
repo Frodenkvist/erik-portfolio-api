@@ -30,6 +30,13 @@ namespace ErikPortfolioApi.Services
             return photos.Select(p => p.ToEncodedPhoto());
         }
 
+        public async Task<IEnumerable<PresentPhoto>> GetPresentPhotos(long folderId)
+        {
+            var photos = await _photoRepository.ReadPhotos(folderId);
+
+            return photos.Select(p => p.ToPresentPhoto());
+        }
+
         public async Task<Photo> SavePhotos(CreatePhotoRequest createPhotoRequest)
         {
             var basePath = _configuration.GetSection("Photo").GetValue<string>("storagePath");

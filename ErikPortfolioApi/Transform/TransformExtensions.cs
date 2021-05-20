@@ -28,5 +28,16 @@ namespace ErikPortfolioApi.Transform
 
             return encodedPhoto;
         }
+
+        public static PresentPhoto ToPresentPhoto(this Photo photo)
+        {
+            var presentPhoto = new PresentPhoto()
+            {
+                Id = photo.Id,
+                Name = photo.name
+            };
+
+            return presentPhoto;
+        }
     }
 }
