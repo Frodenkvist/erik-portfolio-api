@@ -34,6 +34,8 @@ namespace ErikPortfolioApi.Services
         {
             var basePath = _configuration.GetSection("Photo").GetValue<string>("storagePath");
 
+            if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
             if (createPhotoRequest.File.Length == 0) throw new ArgumentException("File null");
 
             var folder = await _folderService.GetFolder(createPhotoRequest.ParentFolderId);
