@@ -11,7 +11,8 @@ namespace ErikPortfolioApi.Transform
         {
             var encodedPhoto = new EncodedPhoto()
             {
-                Id = photo.Id
+                Id = photo.Id,
+                Name = photo.name
             };
 
             using (Image image = Image.FromFile(photo.PhysicalPath))
