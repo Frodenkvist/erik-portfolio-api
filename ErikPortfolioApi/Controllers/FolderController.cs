@@ -27,7 +27,7 @@ namespace ErikPortfolioApi.Controllers
         {
             return Ok(await _folderService.GetTopFolders());
         }
-    
+
         [HttpGet]
         [Route("structure")]
         public async Task<IActionResult> GetFolderStructure()
@@ -40,6 +40,15 @@ namespace ErikPortfolioApi.Controllers
         public async Task<IActionResult> CreateFolder([FromBody] Folder folder)
         {
             return Ok(await _folderService.CreateFolder(folder));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> RemoveFolder([FromRoute] long id)
+        {
+            await _folderService.RemoveFolder(id);
+            return NoContent();
         }
     }
 }

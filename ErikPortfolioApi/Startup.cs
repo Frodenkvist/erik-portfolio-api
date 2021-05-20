@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ErikPortfolioApi
 {
@@ -52,6 +53,15 @@ namespace ErikPortfolioApi
             .AddJwtBearer(jwt =>
             {
                 var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+
+                jwt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["JWT"];
+                        return Task.CompletedTask;
+                    }
+                };
 
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = new TokenValidationParameters

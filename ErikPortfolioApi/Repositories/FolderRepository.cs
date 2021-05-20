@@ -3,7 +3,6 @@ using ErikPortfolioApi.Model;
 using Npgsql;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ErikPortfolioApi.Repositories
@@ -64,7 +63,7 @@ namespace ErikPortfolioApi.Repositories
         {
             IEnumerable<Folder> folders;
 
-            using(IDbConnection conn = Connection)
+            using (IDbConnection conn = Connection)
             {
                 folders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder");
             }
@@ -81,6 +80,14 @@ namespace ErikPortfolioApi.Repositories
             }
 
             return folder;
+        }
+
+        public async Task DeleteFolder(long id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                await conn.ExecuteAsync("DELETE FROM folder WHERE id = @id", new { id });
+            }
         }
     }
 }

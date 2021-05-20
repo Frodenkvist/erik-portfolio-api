@@ -37,12 +37,24 @@ namespace ErikPortfolioApi.Services
 
             var structureDtos = new List<FolderDto>();
 
-            foreach(var folderDto in folderDtos)
+            foreach (var folderDto in folderDtos)
             {
                 structureDtos.Add(await ConvertChildFolders(folderDto, folders));
             }
 
             return structureDtos;
+        }
+
+        public async Task RemoveFolder(long id)
+        {
+            var children = await _folderRepository.ReadFoldersFromParentId(id);
+
+            foreach (var child in children)
+            {
+                await RemoveFolder(child.Id);
+            }
+
+            await _folderRepository.DeleteFolder(id);
         }
 
         private async Task<FolderDto> ConvertChildFolders(FolderDto folderDto, IEnumerable<Folder> folders)
