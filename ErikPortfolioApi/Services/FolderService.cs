@@ -57,6 +57,11 @@ namespace ErikPortfolioApi.Services
             await _folderRepository.DeleteFolder(id);
         }
 
+        public async Task RenameFolder(long id, string name)
+        {
+            await _folderRepository.RenameFolder(id, name);
+        }
+
         private async Task<FolderDto> ConvertChildFolders(FolderDto folderDto, IEnumerable<Folder> folders)
         {
             var children = folders.Where(f => f.ParentFolderId == folderDto.Id).Select(f => new FolderDto { Id = f.Id, Name = f.Name, Children = new List<FolderDto>() }).ToList();

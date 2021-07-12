@@ -89,5 +89,13 @@ namespace ErikPortfolioApi.Repositories
                 await conn.ExecuteAsync("DELETE FROM folder WHERE id = @id", new { id });
             }
         }
+
+        public async Task RenameFolder(long id, string name)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                await conn.ExecuteAsync("UPDATE folder SET name=@name WHERE id=@id", new { id, name });
+            }
+        }
     }
 }

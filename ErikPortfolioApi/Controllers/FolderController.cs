@@ -50,5 +50,14 @@ namespace ErikPortfolioApi.Controllers
             await _folderService.RemoveFolder(id);
             return NoContent();
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> RenameFolder([FromRoute] long id, [FromBody] RenameFolderRequest request)
+        {
+            await _folderService.RenameFolder(id, request.Name);
+            return NoContent();
+        }
     }
 }
