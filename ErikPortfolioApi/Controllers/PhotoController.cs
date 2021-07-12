@@ -22,10 +22,10 @@ namespace ErikPortfolioApi.Controllers
         }
 
         [HttpGet]
-        [Route("encoded/{folderId}")]
-        public async Task<IActionResult> GetEncodedPhotos([FromRoute] long folderId)
+        [Route("encoded/{id}")]
+        public async Task<IActionResult> GetEncodedPhoto([FromRoute] long id)
         {
-            return Ok(await _photoService.GetEncodedPhotos(folderId));
+            return Ok(await _photoService.GetEncodedPhoto(id));
         }
 
         [HttpGet]

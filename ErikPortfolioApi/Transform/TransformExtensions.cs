@@ -12,7 +12,7 @@ namespace ErikPortfolioApi.Transform
             var encodedPhoto = new EncodedPhoto()
             {
                 Id = photo.Id,
-                Name = photo.name
+                Name = photo.Name
             };
 
             using (Image image = Image.FromFile(photo.PhysicalPath))
@@ -34,7 +34,7 @@ namespace ErikPortfolioApi.Transform
             var presentPhoto = new PresentPhoto()
             {
                 Id = photo.Id,
-                Name = photo.name
+                Name = photo.Name
             };
 
             return presentPhoto;

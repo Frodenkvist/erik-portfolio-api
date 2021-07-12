@@ -3,7 +3,6 @@ using ErikPortfolioApi.Model;
 using Npgsql;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ErikPortfolioApi.Repositories
@@ -57,7 +56,7 @@ namespace ErikPortfolioApi.Repositories
                     {
                         physical_path = photo.PhysicalPath,
                         parent_folder_id = photo.ParentFolder.Id,
-                        name = photo.name
+                        name = photo.Name
                     });
             }
 

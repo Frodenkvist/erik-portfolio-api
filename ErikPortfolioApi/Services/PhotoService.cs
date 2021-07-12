@@ -2,10 +2,8 @@
 using ErikPortfolioApi.Repositories;
 using ErikPortfolioApi.Transform;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,34 +12,22 @@ namespace ErikPortfolioApi.Services
 {
     public class PhotoService
     {
-        private readonly ILogger<PhotoService> _logger;
         private readonly PhotoRepository _photoRepository;
         private readonly IConfiguration _configuration;
         private readonly FolderService _folderService;
 
-        public PhotoService(ILogger<PhotoService> logger, PhotoRepository photoRepository, IConfiguration configuration, FolderService folderService)
+        public PhotoService(PhotoRepository photoRepository, IConfiguration configuration, FolderService folderService)
         {
-            _logger = logger;
             _photoRepository = photoRepository;
             _configuration = configuration;
             _folderService = folderService;
         }
 
-        public async Task<IEnumerable<EncodedPhoto>> GetEncodedPhotos(long folderId)
+        public async Task<EncodedPhoto> GetEncodedPhoto(long id)
         {
-            _logger.LogInformation("Started Encoding Photos");
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var photo = await _photoRepository.ReadPhoto(id);
 
-            var photos = await _photoRepository.ReadPhotos(folderId);
-
-            var encodedPhotos = photos.Select(p => p.ToEncodedPhoto());
-
-            stopwatch.Stop();
-            var ts = stopwatch.Elapsed;
-            _logger.LogInformation("Encoding Photos time: {Hours}:{Minutes}:{Seconds}.{Milliseconds}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
-
-            return encodedPhotos;
+            return photo.ToEncodedPhoto();
         }
 
         public async Task<IEnumerable<PresentPhoto>> GetPresentPhotos(long folderId)
@@ -68,7 +54,7 @@ namespace ErikPortfolioApi.Services
                 await createPhotoRequest.File.CopyToAsync(stream);
             }
 
-            return await _photoRepository.WritePhoto(new Photo() { PhysicalPath = filePath, ParentFolder = folder, name = createPhotoRequest.File.FileName });
+            return await _photoRepository.WritePhoto(new Photo() { PhysicalPath = filePath, ParentFolder = folder, Name = createPhotoRequest.File.FileName });
         }
 
         public async Task DeletePhoto(long id)
