@@ -9,7 +9,7 @@ namespace ErikPortfolioApi.Repositories
 {
     public class PhotoRepository
     {
-        private readonly string PHOTO_SELECT = "SELECT id, name, physical_path AS physicalPath, photo_order AS order FROM";
+        private readonly string PHOTO_SELECT = "SELECT id, name, physical_path AS physicalPath, parent_folder_id AS parentFolderId, photo_order AS order FROM";
         private readonly string _connectionString;
         private IDbConnection Connection
         {
