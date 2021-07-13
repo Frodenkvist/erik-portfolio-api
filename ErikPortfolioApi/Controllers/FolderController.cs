@@ -59,5 +59,14 @@ namespace ErikPortfolioApi.Controllers
             await _folderService.RenameFolder(id, request.Name);
             return NoContent();
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        [Route("{id}/order")]
+        public async Task<IActionResult> UpdateFolderOrder([FromRoute] long id, [FromBody] UpdateFolderOrderRequest request)
+        {
+            await _folderService.ChangeFolderOrder(id, request.Order);
+            return NoContent();
+        }
     }
 }

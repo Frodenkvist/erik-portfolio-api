@@ -9,6 +9,7 @@ namespace ErikPortfolioApi.Repositories
 {
     public class FolderRepository
     {
+        private readonly string FOLDER_SELECT = "SELECT id, name, parent_folder_id AS parentFolderId, folder_order AS order FROM folder";
         private readonly string _connectionString;
         private IDbConnection Connection
         {
@@ -29,19 +30,26 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                topFolders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE parent_folder_id IS NULL");
+                topFolders = await conn.QueryAsync<Folder>($"{FOLDER_SELECT} WHERE parent_folder_id IS NULL");
             }
 
             return topFolders;
         }
 
-        public async Task<IEnumerable<Folder>> ReadFoldersFromParentId(long parentFolderId)
+        public async Task<IEnumerable<Folder>> ReadFoldersFromParentId(long? parentFolderId)
         {
             IEnumerable<Folder> folders;
 
             using (IDbConnection conn = Connection)
             {
-                folders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE parent_folder_id = @parentFolderId", new { parentFolderId });
+                if (parentFolderId != null)
+                {
+                    folders = await conn.QueryAsync<Folder>($"{FOLDER_SELECT} WHERE parent_folder_id = @parentFolderId", new { parentFolderId });
+                }
+                else
+                {
+                    folders = await conn.QueryAsync<Folder>($"{FOLDER_SELECT} WHERE parent_folder_id IS NULL");
+                }
             }
 
             return folders;
@@ -53,7 +61,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                folder = await conn.QueryFirstAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder WHERE id = @id", new { id });
+                folder = await conn.QueryFirstAsync<Folder>($"{FOLDER_SELECT} WHERE id = @id", new { id });
             }
 
             return folder;
@@ -65,7 +73,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                folders = await conn.QueryAsync<Folder>("SELECT id, name, parent_folder_id parentFolderId FROM folder");
+                folders = await conn.QueryAsync<Folder>($"{FOLDER_SELECT}");
             }
 
             return folders;
@@ -95,6 +103,14 @@ namespace ErikPortfolioApi.Repositories
             using (IDbConnection conn = Connection)
             {
                 await conn.ExecuteAsync("UPDATE folder SET name=@name WHERE id=@id", new { id, name });
+            }
+        }
+
+        public async Task UpdateFolderOrder(long id, int order)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                await conn.ExecuteAsync("UPDATE folder SET folder_order=@order WHERE id=@id", new { id, order });
             }
         }
     }

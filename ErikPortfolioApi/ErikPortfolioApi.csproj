@@ -29,5 +29,6 @@
 		<None Remove="db\migrations\V2__create_login_table.sql" />
 		<None Remove="db\migrations\V3__create_folder.sql" />
 		<None Remove="db\migrations\V4__add_cascade.sql" />
+		<None Remove="db\migrations\V5__add_order.sql" />
 	</ItemGroup>
 </Project>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ErikPortfolioApi.Model
 {
@@ -11,5 +7,7 @@ namespace ErikPortfolioApi.Model
         public long Id { get; set; }
         public string Name { get; set; }
         public IEnumerable<FolderDto> Children { get; set; }
+        public int Order { get; set; }
+        public long? ParentFolderId { get; set; }
     }
 }
