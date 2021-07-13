@@ -64,6 +64,8 @@ namespace ErikPortfolioApi.Services
 
         public async Task RemoveFolder(long id)
         {
+            var folder = await _folderRepository.ReadFolder(id);
+            var folders = (await _folderRepository.ReadFoldersFromParentId(folder.ParentFolderId)).OrderBy(f => f.Order).ToList();
             var children = await _folderRepository.ReadFoldersFromParentId(id);
 
             foreach (var child in children)
@@ -72,6 +74,11 @@ namespace ErikPortfolioApi.Services
             }
 
             await _folderRepository.DeleteFolder(id);
+
+            for (var i = folder.Order + 1; i < folders.Count; ++i)
+            {
+                await _folderRepository.UpdateFolderOrder(folders[i].Id, i - 1);
+            }
         }
 
         public async Task RenameFolder(long id, string name)
