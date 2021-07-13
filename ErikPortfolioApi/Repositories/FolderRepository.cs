@@ -83,7 +83,7 @@ namespace ErikPortfolioApi.Repositories
         {
             using (IDbConnection conn = Connection)
             {
-                folder.Id = await conn.QueryFirstAsync<int>("INSERT INTO folder (name, parent_folder_id, order) VALUES (@name, @parentFolderId, @order) RETURNING Id",
+                folder.Id = await conn.QueryFirstAsync<int>("INSERT INTO folder (name, parent_folder_id, folder_order) VALUES (@name, @parentFolderId, @order) RETURNING Id",
                     new { name = folder.Name, parentFolderId = folder.ParentFolderId, order = folder.Order });
             }
 
