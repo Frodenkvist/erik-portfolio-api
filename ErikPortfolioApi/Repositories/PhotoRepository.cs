@@ -9,6 +9,7 @@ namespace ErikPortfolioApi.Repositories
 {
     public class PhotoRepository
     {
+        private readonly string PHOTO_SELECT = "SELECT id, name, physical_path AS physicalPath, photo_order AS order FROM";
         private readonly string _connectionString;
         private IDbConnection Connection
         {
@@ -29,7 +30,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                photos = await conn.QueryAsync<Photo>("SELECT id, name, physical_path physicalPath FROM photo WHERE parent_folder_id = @parentFolderId", new { parentFolderId = folderId });
+                photos = await conn.QueryAsync<Photo>($"{PHOTO_SELECT} photo WHERE parent_folder_id = @parentFolderId", new { parentFolderId = folderId });
             }
 
             return photos;
@@ -41,7 +42,7 @@ namespace ErikPortfolioApi.Repositories
 
             using (IDbConnection conn = Connection)
             {
-                photo = await conn.QueryFirstAsync<Photo>("SELECT id, name, physical_path physicalPath FROM photo WHERE id = @id", new { id });
+                photo = await conn.QueryFirstAsync<Photo>($"{PHOTO_SELECT} photo WHERE id = @id", new { id });
             }
 
             return photo;
@@ -51,12 +52,13 @@ namespace ErikPortfolioApi.Repositories
         {
             using (IDbConnection conn = Connection)
             {
-                photo.Id = await conn.QueryFirstAsync<int>("INSERT INTO photo (physical_path, parent_folder_id, name) VALUES (@physical_path, @parent_folder_id, @name) RETURNING Id",
+                photo.Id = await conn.QueryFirstAsync<int>("INSERT INTO photo (physical_path, parent_folder_id, name, photo_order) VALUES (@physical_path, @parent_folder_id, @name, @order) RETURNING Id",
                     new
                     {
                         physical_path = photo.PhysicalPath,
-                        parent_folder_id = photo.ParentFolder.Id,
-                        name = photo.Name
+                        parent_folder_id = photo.ParentFolderId,
+                        name = photo.Name,
+                        order = photo.Order
                     });
             }
 
@@ -68,6 +70,14 @@ namespace ErikPortfolioApi.Repositories
             using (IDbConnection conn = Connection)
             {
                 await conn.ExecuteAsync("DELETE FROM photo WHERE id = @Id", new { Id = id });
+            }
+        }
+
+        public async Task UpdatePhotoOrder(long id, int order)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                await conn.ExecuteAsync("UPDATE photo SET photo_order=@order WHERE id=@id", new { id, order });
             }
         }
     }

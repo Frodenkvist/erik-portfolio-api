@@ -1,6 +1,6 @@
 ﻿namespace ErikPortfolioApi.Model
 {
-    public class UpdateFolderOrderRequest
+    public class UpdateOrderRequest
     {
         public int Order { get; set; }
     }

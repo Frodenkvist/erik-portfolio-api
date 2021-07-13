@@ -63,7 +63,7 @@ namespace ErikPortfolioApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("{id}/order")]
-        public async Task<IActionResult> UpdateFolderOrder([FromRoute] long id, [FromBody] UpdateFolderOrderRequest request)
+        public async Task<IActionResult> UpdateFolderOrder([FromRoute] long id, [FromBody] UpdateOrderRequest request)
         {
             await _folderService.ChangeFolderOrder(id, request.Order);
             return NoContent();

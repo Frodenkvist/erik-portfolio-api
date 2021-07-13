@@ -39,7 +39,7 @@ namespace ErikPortfolioApi.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadPhotos([FromForm] CreatePhotoRequest createPhotoRequest)
         {
-            return Ok(await _photoService.SavePhotos(createPhotoRequest));
+            return Ok(await _photoService.SavePhoto(createPhotoRequest));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -49,6 +49,15 @@ namespace ErikPortfolioApi.Controllers
         {
             await _photoService.DeletePhoto(id);
 
+            return NoContent();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        [Route("{id}/order")]
+        public async Task<IActionResult> UpdatePhotoOrder([FromRoute] long id, [FromBody] UpdateOrderRequest request)
+        {
+            await _photoService.ChangePhotoOrder(id, request.Order);
             return NoContent();
         }
     }
