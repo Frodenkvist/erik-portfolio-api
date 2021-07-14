@@ -39,7 +39,7 @@ namespace ErikPortfolioApi.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadPhotos([FromForm] CreatePhotoRequest createPhotoRequest)
         {
-            return Ok(await _photoService.SavePhoto(createPhotoRequest));
+            return Ok(await _photoService.SavePhotos(createPhotoRequest));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

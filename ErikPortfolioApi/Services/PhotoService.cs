@@ -2,7 +2,6 @@
 using ErikPortfolioApi.Repositories;
 using ErikPortfolioApi.Transform;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,30 +34,35 @@ namespace ErikPortfolioApi.Services
             return photos.Select(p => p.ToPresentPhoto()).OrderBy(p => p.Order);
         }
 
-        public async Task<Photo> SavePhoto(CreatePhotoRequest createPhotoRequest)
+        public async Task<IEnumerable<Photo>> SavePhotos(CreatePhotoRequest createPhotoRequest)
         {
             var basePath = _configuration.GetSection("Photo").GetValue<string>("storagePath");
 
             if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
 
-            if (createPhotoRequest.File.Length == 0) throw new ArgumentException("File null");
+            var createdPhotos = new List<Photo>();
 
-            var filePath = Path.Combine(basePath, createPhotoRequest.File.FileName);
+            var orderIndex = (await _photoRepository.ReadPhotos(createPhotoRequest.ParentFolderId)).Count();
 
-            using (var stream = File.Create(filePath))
+            foreach (var file in createPhotoRequest.Files)
             {
-                await createPhotoRequest.File.CopyToAsync(stream);
+                var filePath = Path.Combine(basePath, file.FileName);
+
+                using (var stream = File.Create(filePath))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                createdPhotos.Add(await _photoRepository.WritePhoto(new Photo()
+                {
+                    PhysicalPath = filePath,
+                    ParentFolderId = createPhotoRequest.ParentFolderId,
+                    Name = file.FileName,
+                    Order = orderIndex++
+                }));
             }
 
-            var photos = await _photoRepository.ReadPhotos(createPhotoRequest.ParentFolderId);
-
-            return await _photoRepository.WritePhoto(new Photo()
-            {
-                PhysicalPath = filePath,
-                ParentFolderId = createPhotoRequest.ParentFolderId,
-                Name = createPhotoRequest.File.FileName,
-                Order = photos.Count()
-            });
+            return createdPhotos;
         }
 
         public async Task DeletePhoto(long id)
